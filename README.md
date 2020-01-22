@@ -18,4 +18,4 @@ java -Djavax.net.ssl.keyStore=PathToKeystore\
 System properties javax.net.ssl.keyStorePassword and javax.net.ssl.keyStorePassword should be set and the parameters protocol, cipher suites and ports should be passed in as comma separated lists.
 
 ## License
-[GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[MIT](https://github.com/spatineo/tls-mock-server/blob/master/LICENSE)
