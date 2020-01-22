@@ -6,8 +6,16 @@ public class ServerHandler {
     public ServerHandler(){}
 
     /**
+     *<p>
+     *     Initializes the test server with the given arguments
      *
-     * @param args
+     *     The paramter args is a String array containing three required and one optional value
+     *     0: Required value: Comma separated String of Protocols you want to support eg. "TLSv1,TLSv1.2"
+     *     1: Required value: Comma separated String of Cipher Suites you want to support eg. "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+     *     2: Required value: Comma separated String containing 2 port numbers. The first for http port the second for https eg. "8080,8443"
+     *     3: Optional value: A String containing the path to the file you wish to log to
+     *</p>
+     * @param args Arguments required to start tls-mock-server
      *
      */
     public static void main(String[] args) {
@@ -21,16 +29,10 @@ public class ServerHandler {
 
     /**
      *<p>
-     *     Initializes the test server with the given arguments
-     *
-     *     The paramter args is a String array containing three required and one optional value
-     *     0: Required value: Comma separated String of Protocols you want to support eg. "TLSv1,TLSv1.2"
-     *     1: Required value: Comma separated String of Cipher Suites you want to support eg. "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
-     *     2: Required value: Comma separated String containing 2 port numbers. The first for http port the second for https eg. "8080,8443"
-     *     3: Optional value: A String containing the path to the file you wish to log to
+     *     This method is in place for easier testing and is passed the argument list directly from the main method. All applicable argument descriptors can be found there.
      *</p>
-     * @param args
-     * @throws IllegalArgumentException
+     * @param args initialization args
+     * @throws IllegalArgumentException If incorrect arguments are passed to this method  an IllegalArgumentException is thrown. Argument descriptors can be found in the main method javadoc.
      */
     public void init(String[] args) throws IllegalArgumentException {
         if(!isEmpty(System.getProperty(Const.PROPERTY_KEYSTORE)) || !isEmpty(System.getProperty(Const.PROPERTY_KEYSTORE_PSWD))) {
@@ -56,8 +58,8 @@ public class ServerHandler {
     }
 
     /**
-     *
-     * @param string
+     * <p>A method for checking if a trimmed string is empty or null</p>
+     * @param string String that is to be checked
      * @return true if the trimmed value of the parameter is empty or null
      */
     public static boolean isEmpty(String string) {
