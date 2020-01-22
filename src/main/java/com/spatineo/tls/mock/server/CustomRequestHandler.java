@@ -1,4 +1,4 @@
-package com.spatineo.ssltestserver;
+package com.spatineo.tls.mock.server;
 
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -15,15 +15,15 @@ public class CustomRequestHandler extends AbstractHandler {
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        ServerHandler.LOG.write("Request: ");
-        ServerHandler.LOG.write(request.toString());
+        System.out.println("Request: ");
+        System.out.println(request.toString());
         response.setContentType(Const.RESPONSE_CONTENT_TYPE);
         response.setStatus(HttpServletResponse.SC_OK);
 
         PrintWriter out = response.getWriter();
 
-        ServerHandler.LOG.write("Response: ");
-        ServerHandler.LOG.write(response.toString());
+        System.out.println("Response: ");
+        System.out.println(response.toString());
         out.println("<h1>" + Const.SERVER_GREETING + request.getServerPort() + " " + target + "</h1>");
 
         baseRequest.setHandled(true);

@@ -5,7 +5,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.spatineo</groupId>
-    <artifactId>SSLTestServer</artifactId>
+    <artifactId>tls-mock-server</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
@@ -27,9 +27,9 @@
     </developers>
 
     <scm><!-- FIXME: Add correct information -->
-        <connection>scm:git:git://github.com/spatineo/ossrh-demo.git</connection>
-        <developerConnection>scm:git:ssh://github.com:spatineo/ossrh-demo.git</developerConnection>
-        <url>http://github.com/spatineo/ossrh-demo/tree/master</url>
+        <connection>scm:git:git://github.com/spatineo/tls-mock-server.git</connection>
+        <developerConnection>scm:git:git@github.com:spatineo/tls-mock-server.git</developerConnection>
+        <url>http://github.com/spatineo/tls-mock-server/tree/master</url>
     </scm>
 
     <licenses>
@@ -100,7 +100,7 @@
                     <finalName>${project.artifactId}-${project.version}</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>com.spatineo.ssltestserver.ServerHandler</mainClass>
+                            <mainClass>com.spatineo.tls.mock.server.ServerHandler</mainClass>
                         </manifest>
                     </archive>
 

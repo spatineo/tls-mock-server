@@ -1,5 +1,5 @@
-import com.spatineo.ssltestserver.Const;
-import com.spatineo.ssltestserver.ServerHandler;
+package com.spatineo.tls.mock.server;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,49 +12,27 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest(ServerHandler.class)
 public class ServerHandlerTest {
     ServerHandler serverHandler;
-    String[] argsNoLogging;
-    String[] argsWithLogging;
+    String[] ARGS;
 
     @Before
     public void setup() throws Exception {
-        //serverHandler = spy(new ServerHandler());
         serverHandler = PowerMockito.spy(new ServerHandler());
-        String logPath = getClass().getClassLoader().getResource("testLog.txt").toURI().getPath();
-        argsNoLogging = new String[]{"TLSv1.2", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384", "8080,8443"};
-        argsWithLogging = new String[]{"TLSv1.2", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384", "8080,8443", logPath};
-
+        ARGS = new String[]{"TLSv1.2", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384", "8080,8443"};
     }
 
     //@Test
-    public void startMainWithLogging() throws Exception {
+    public void startMain() throws Exception {
         setSystemProperties(true);
-        ServerHandler.main(argsWithLogging);
+        ServerHandler.main(ARGS);
     }
 
     @Test
     public void threeArgs() throws Exception {
         setSystemProperties(true);
-        String[] args = new String[3];
-        args[0] = "TLSv1.2,TLSv1.3";
-        args[1] = "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384";
-        args[2] = "8080,8443";
 
         PowerMockito.doNothing().when(serverHandler, "startAndJoinServer");
 
-        serverHandler.init(args);
-    }
-
-    @Test
-    public void fourArgs() throws Exception {
-        setSystemProperties(true);
-        String[] args = new String[4];
-        args[0] = "TLSv1.2,TLSv1.3";
-        args[1] = "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384";
-        args[2] = "8080,8443";
-        args[3] = System.getProperty("User.dir") + "/log.txt";
-
-        PowerMockito.doNothing().when(serverHandler, "startAndJoinServer");
-        serverHandler.init(args);
+        serverHandler.init(ARGS);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -74,8 +52,8 @@ public class ServerHandlerTest {
     }
 
     private void setSystemProperties(boolean set) throws Exception {
-        String keystorePath = getClass().getResource("keystore").toURI().getPath();
-        System.setProperty(Const.PROPERTY_KEYSTORE, (set) ? keystorePath : ""); //TODO: create test resource
+        String keystorePath = System.getProperty("user.dir") + "/src/test/resources/keystore";
+        System.setProperty(Const.PROPERTY_KEYSTORE, (set) ? keystorePath : "");
         System.setProperty(Const.PROPERTY_KEYSTORE_PSWD, (set) ? "password" : "");
     }
 }

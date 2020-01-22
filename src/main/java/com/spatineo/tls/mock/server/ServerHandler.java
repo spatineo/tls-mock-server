@@ -1,10 +1,9 @@
-package com.spatineo.ssltestserver;
+package com.spatineo.tls.mock.server;
 
 public class ServerHandler {
-    public static Logger LOG = new Logger();
+    private TLSMockServer SERVER = null;
 
     public ServerHandler(){}
-    private SSLTestServer SERVER = null;
 
     /**
      *
@@ -35,27 +34,17 @@ public class ServerHandler {
      */
     public void init(String[] args) throws IllegalArgumentException {
         if(!isEmpty(System.getProperty(Const.PROPERTY_KEYSTORE)) || !isEmpty(System.getProperty(Const.PROPERTY_KEYSTORE_PSWD))) {
-            try {
-                if (args.length == 4 && !isEmpty(args[3])) {
-                    LOG = new Logger(args[3]);
-                } else {
-                    LOG = new Logger();
-                }
-                LOG.write("Protocols: " + args[0]);
-                LOG.write("Cipher suites: " + args[1]);
-                LOG.write("Unsecured and secured port: " + args[2]);
+                System.out.println("Protocols: " + args[0]);
+                System.out.println("Cipher suites: " + args[1]);
+                System.out.println("Unsecured and secured port: " + args[2]);
 
                 String[] protocolList = args[0].split(Const.SEPARATOR);
                 String[] cipherList = args[1].split(Const.SEPARATOR);
                 String[] ports = args[2].split(Const.SEPARATOR);
 
-                SERVER = new SSLTestServer(Integer.parseInt(ports[0]));
+                SERVER = new TLSMockServer(Integer.parseInt(ports[0]));
                 SERVER.initTestServer(Integer.parseInt(ports[1]), cipherList, protocolList);
                 startAndJoinServer();
-
-            } catch (Exception e) {
-                LOG.write(e);
-            }
         } else {
             throw new IllegalArgumentException(Const.BAD_ARGUMENTS_MESSAGE);
         }

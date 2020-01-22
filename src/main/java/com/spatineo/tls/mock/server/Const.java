@@ -1,4 +1,4 @@
-package com.spatineo.ssltestserver;
+package com.spatineo.tls.mock.server;
 
 public class Const {
     public static final String SEPARATOR = ",";

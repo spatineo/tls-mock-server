@@ -1,20 +1,20 @@
-package com.spatineo.ssltestserver;
+package com.spatineo.tls.mock.server;
 
 import org.eclipse.jetty.http2.HTTP2Cipher;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
-public class SSLTestServer {
+public class TLSMockServer {
     private Server SERVER;
 
     /**
      * <p>Class constructer for custom implementation of jetty server</p>
      * @param port The port at which http requests can be made to
      */
-    public SSLTestServer(int port) {
-        ServerHandler.LOG.write("Setting http port to " + port);
+    public TLSMockServer(int port) {
+        System.out.println("Setting http port to " + port);
         SERVER = new Server(port);
-        ServerHandler.LOG.write("Server initialized");
+        System.out.println("Server initialized");
     }
 
     /**
@@ -23,10 +23,10 @@ public class SSLTestServer {
     public void start() {
         try {
             SERVER.start();
-            ServerHandler.LOG.write("SSL test server started");
+            System.out.println("SSL test server started");
             SERVER.join();
         } catch(Exception e) {
-            ServerHandler.LOG.write(e);
+            System.out.println(e);
             e.printStackTrace();
         }
     }
@@ -38,7 +38,7 @@ public class SSLTestServer {
      * @param protocols An array of TLS protocol versions accepted by the server
      */
     public void initTestServer(int securePort, String[] ciphers, String[] protocols) {
-        ServerHandler.LOG.write("Setting https port to " + securePort);
+        System.out.println("Setting https port to " + securePort);
         HttpConfiguration httpsConfig = createHttpsFactory(securePort);
         HttpConnectionFactory httpsCF = new HttpConnectionFactory(httpsConfig);
 
@@ -49,7 +49,6 @@ public class SSLTestServer {
 
         SERVER.addConnector(httpsConnector);
         SERVER.setHandler(new CustomRequestHandler());
-
     }
 
     private HttpConfiguration createHttpsFactory(int port) {

@@ -9,7 +9,7 @@ tls-mock-server starts a jetty service that utilizes selected ports and supports
 ```sh
 java -Djavax.net.ssl.keyStore=PathToKeystore\
 -Djavax.net.ssl.keyStorePassword=KeystorePassword\
--jar jarname.jar\
+-jar tls-mock-server-1.0.0.jar\
 "TLSv1.2,TLSv1.3"\
 "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"\
 "8080,8443"
