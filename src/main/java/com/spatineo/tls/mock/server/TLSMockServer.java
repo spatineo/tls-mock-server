@@ -1,8 +1,16 @@
 package com.spatineo.tls.mock.server;
 
+import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.http2.HTTP2Cipher;
 import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.resource.PathResource;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+
+import java.io.File;
 
 public class TLSMockServer {
     private Server SERVER;
@@ -18,15 +26,26 @@ public class TLSMockServer {
     }
 
     /**
-     * <p>Starts and joins a previously defined server</p>
+     * <p>Starts the previously defined server</p>
      */
     public void start() {
         try {
             SERVER.start();
             System.out.println("SSL test server started");
-            SERVER.join();
         } catch(Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * <p>Stops the previously defined server</p>
+     */
+    public void join() {
+        try {
+            if(SERVER != null) {
+                SERVER.join();
+            }
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }
@@ -48,7 +67,33 @@ public class TLSMockServer {
         httpsConnector.setPort(securePort);
 
         SERVER.addConnector(httpsConnector);
-        SERVER.setHandler(new CustomRequestHandler());
+
+        HandlerList handlers = new HandlerList();
+
+        ContextHandler rootpath = new ContextHandler();
+        rootpath.setContextPath("/");
+        rootpath.setHandler(new CustomRequestHandler(Const.CONTENT_TYPE_HTML));
+
+        ContextHandler jsonpath = new ContextHandler();
+        jsonpath.setContextPath("/json"); //TODO: MIME type as parameter
+        jsonpath.setHandler(new CustomRequestHandler(Const.CONTENT_TYPE_JSON));
+
+        ContextHandler xmlpath = new ContextHandler();
+        xmlpath.setContextPath("/xml"); //TODO: MIME type as parameter
+        xmlpath.setHandler(new CustomRequestHandler(Const.CONTENT_TYPE_XML));
+
+        String filePath = System.getProperty(Const.PROPERTY_RESPONSE_FILE);
+        ContextHandler filepath = new ContextHandler();
+        filepath.setContextPath("/file");
+        filepath.setHandler(new CustomFileRequestHandler((ServerHandler.isEmpty(filePath)) ? "" : filePath));
+
+        handlers.addHandler(filepath);
+        handlers.addHandler(jsonpath);
+        handlers.addHandler(xmlpath);
+        handlers.addHandler(rootpath);
+
+        SERVER.setHandler(handlers);
+
     }
 
     private HttpConfiguration createHttpsFactory(int port) {
