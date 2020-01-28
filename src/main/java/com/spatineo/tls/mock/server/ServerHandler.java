@@ -20,41 +20,60 @@ public class ServerHandler {
      */
     public static void main(String[] args) {
         try {
+            if(args == null || args.length < 3) {
+                throw new IllegalArgumentException(Const.BAD_ARGUMENTS_MESSAGE);
+            }
             ServerHandler serverHandler = new ServerHandler();
-            serverHandler.init(args);
+
+            System.out.println("Protocols: " + args[0]);
+            String[] protocolList = args[0].split(Const.SEPARATOR);
+
+            System.out.println("Cipher suites: " + args[1]);
+            String[] cipherList = args[1].split(Const.SEPARATOR);
+
+            System.out.println("Unsecured and secured port: " + args[2]);
+            Integer[] ports = stringToIntArray(args[2]);
+
+            serverHandler.init(protocolList, cipherList, ports);
         } catch(IllegalArgumentException e) {
             e.printStackTrace();
         }
+    }
+
+    private static Integer[] stringToIntArray(String string) {
+        String[] stringArray = string.trim().split(Const.SEPARATOR);
+        Integer[] intArray = new Integer[stringArray.length];
+        for(int i = 0; i < stringArray.length; i++) {
+            intArray[i] = Integer.parseInt(stringArray[i].trim());
+        }
+        return intArray;
     }
 
     /**
      *<p>
      *     This method is in place for easier testing and is passed the argument list directly from the main method. All applicable argument descriptors can be found there.
      *</p>
-     * @param args initialization args
+     * @param protocols string array of TLS protocols that the SSL port should respond to
+     * @param ciphers string array of java supported cipher suites that the SSL port should respond to
+     * @param ports integer array containing two ports [1] http port and [2] https port
      * @throws IllegalArgumentException If incorrect arguments are passed to this method  an IllegalArgumentException is thrown. Argument descriptors can be found in the main method javadoc.
      */
-    public void init(String[] args) throws IllegalArgumentException {
-        if(!isEmpty(System.getProperty(Const.PROPERTY_KEYSTORE)) || !isEmpty(System.getProperty(Const.PROPERTY_KEYSTORE_PSWD))) {
-                System.out.println("Protocols: " + args[0]);
-                System.out.println("Cipher suites: " + args[1]);
-                System.out.println("Unsecured and secured port: " + args[2]);
-
-                String[] protocolList = args[0].split(Const.SEPARATOR);
-                String[] cipherList = args[1].split(Const.SEPARATOR);
-                String[] ports = args[2].split(Const.SEPARATOR);
-
-                SERVER = new TLSMockServer(Integer.parseInt(ports[0]));
-                SERVER.initTestServer(Integer.parseInt(ports[1]), cipherList, protocolList);
-                startAndJoinServer();
-        } else {
+    public void init(String[] protocols, String[] ciphers, Integer[] ports) throws IllegalArgumentException {
+        if(isEmpty(System.getProperty(Const.PROPERTY_KEYSTORE)) || isEmpty(System.getProperty(Const.PROPERTY_KEYSTORE_PSWD))) {
             throw new IllegalArgumentException(Const.BAD_ARGUMENTS_MESSAGE);
         }
+        if(arrayIsEmpty(protocols) || arrayIsEmpty(ciphers) || arrayIsEmpty(ports)) {
+            throw new IllegalArgumentException(Const.BAD_ARGUMENTS_MESSAGE);
+        }
+        SERVER = new TLSMockServer(ports[0]);
+        SERVER.initTestServer(ports[1], ciphers, protocols);
+        startAndJoinServer();
     }
 
 
     private void startAndJoinServer() {
         SERVER.start();
+        SERVER.join();
     }
 
     /**
@@ -64,5 +83,8 @@ public class ServerHandler {
      */
     public static boolean isEmpty(String string) {
         return string == null || string.trim().equals("");
+    }
+    public static boolean arrayIsEmpty(Object[] array) {
+        return array == null || array.length < 1;
     }
 }
