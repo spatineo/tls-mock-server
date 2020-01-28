@@ -12,12 +12,14 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest(ServerHandler.class)
 public class ServerHandlerTest {
     ServerHandler serverHandler;
-    String[] ARGS;
+    String[] ARGS = {"TLSv1.2", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384", "8080,8443"};
+    String[] protocols = {"TLSv1.2"};
+    String[] ciphers = {"TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"};
+    Integer[] ports = {8080, 8443};
 
     @Before
     public void setup() throws Exception {
         serverHandler = PowerMockito.spy(new ServerHandler());
-        ARGS = new String[]{"TLSv1.2", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384", "8080,8443"};
     }
 
     //@Test
@@ -27,12 +29,11 @@ public class ServerHandlerTest {
     }
 
     @Test
-    public void threeArgs() throws Exception {
+    public void initTest() throws Exception {
         setSystemProperties(true);
-
         PowerMockito.doNothing().when(serverHandler, "startAndJoinServer");
 
-        serverHandler.init(ARGS);
+        serverHandler.init(protocols, ciphers, ports);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -41,7 +42,7 @@ public class ServerHandlerTest {
         System.setProperty(Const.PROPERTY_KEYSTORE, "");
         System.setProperty(Const.PROPERTY_KEYSTORE_PSWD, "");
 
-        serverHandler.init(new String[] {});
+        serverHandler.init(null, null, null);
     }
 
     @Test
@@ -51,9 +52,18 @@ public class ServerHandlerTest {
         Assert.assertFalse(ServerHandler.isEmpty("not empty"));
     }
 
-    private void setSystemProperties(boolean set) throws Exception {
-        String keystorePath = System.getProperty("user.dir") + "/src/test/resources/keystore";
+    @Test
+    public void arrayIsEmptyTest() {
+        Assert.assertTrue(ServerHandler.arrayIsEmpty(null));
+        Assert.assertTrue(ServerHandler.arrayIsEmpty(new String[]{}));
+        Assert.assertFalse(ServerHandler.arrayIsEmpty(new String[]{"val", "val"}));
+    }
+
+    private void setSystemProperties(boolean set) throws NullPointerException {
+        String keystorePath = getClass().getClassLoader().getResource("keystore").getPath();
+        String testResponsePath = getClass().getClassLoader().getResource("Response.xml").getPath();
         System.setProperty(Const.PROPERTY_KEYSTORE, (set) ? keystorePath : "");
         System.setProperty(Const.PROPERTY_KEYSTORE_PSWD, (set) ? "password" : "");
+        System.setProperty(Const.PROPERTY_RESPONSE_FILE, (set) ? testResponsePath : "");
     }
 }
