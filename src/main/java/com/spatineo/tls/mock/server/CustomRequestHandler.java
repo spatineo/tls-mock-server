@@ -50,7 +50,7 @@ public class CustomRequestHandler extends AbstractHandler {
 
         System.out.println("Response: ");
         System.out.println(response.toString());
-
+        //TODO: add response delay
         baseRequest.setHandled(true);
     }
 }

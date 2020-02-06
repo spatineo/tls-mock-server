@@ -50,6 +50,21 @@ public class TLSMockServer {
         }
     }
 
+    public boolean isAlive() {
+        return (SERVER.getState().toUpperCase().equals("STOPPED") ? false : true);
+
+    }
+
+    public void stop() {
+        try {
+            if(SERVER != null) {
+                SERVER.stop();
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void initTestServer(int securePort, String[] ciphers, String[] protocols) {
         initTestServer(securePort, ciphers, protocols, null);
     }
@@ -79,7 +94,8 @@ public class TLSMockServer {
 
         HandlerList handlers = new HandlerList();
 
-/*
+/* TODO: Remove commented code once tests are done
+
         ContextHandler rootpath = new ContextHandler();
         rootpath.setContextPath("/");
         rootpath.setHandler(new CustomRequestHandler(Const.CONTENT_TYPE_HTML));
