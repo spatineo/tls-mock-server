@@ -58,7 +58,7 @@ public class ServerHandler {
      * @param ports integer array containing two ports [1] http port and [2] https port
      * @throws IllegalArgumentException If incorrect arguments are passed to this method  an IllegalArgumentException is thrown. Argument descriptors can be found in the main method javadoc.
      */
-    public void init(String[] protocols, String[] ciphers, Integer[] ports) throws IllegalArgumentException {
+    public void init(String[] protocols, String[] ciphers, Integer[] ports) throws IllegalArgumentException {//TODO: Add custom responses
         if(isEmpty(System.getProperty(Const.PROPERTY_KEYSTORE)) || isEmpty(System.getProperty(Const.PROPERTY_KEYSTORE_PSWD))) {
             throw new IllegalArgumentException(Const.BAD_ARGUMENTS_MESSAGE);
         }
