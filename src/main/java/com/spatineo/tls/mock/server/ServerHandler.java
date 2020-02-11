@@ -62,9 +62,11 @@ public class ServerHandler {
      * @param protocols string array of TLS protocols that the SSL port should respond to
      * @param ciphers string array of java supported cipher suites that the SSL port should respond to
      * @param ports integer array containing two ports [1] http port and [2] https port
+     * @param customResponseString (optional) if a specific response is required it can be passed in with this string
+     * @param customResponseFilePath (optional) if a file is expected as a response the absolute path to the file can be passed in
      * @throws IllegalArgumentException If incorrect arguments are passed to this method  an IllegalArgumentException is thrown. Argument descriptors can be found in the main method javadoc.
      */
-    public void init(String[] protocols, String[] ciphers, Integer[] ports, String customResponseString, String customResponseFilePath) throws IllegalArgumentException {//TODO: Add custom responses
+    public void init(String[] protocols, String[] ciphers, Integer[] ports, String customResponseString, String customResponseFilePath) throws IllegalArgumentException {
         if(isEmpty(System.getProperty(Const.PROPERTY_KEYSTORE)) || isEmpty(System.getProperty(Const.PROPERTY_KEYSTORE_PSWD))) {
             throw new IllegalArgumentException(Const.BAD_ARGUMENTS_MESSAGE);
         }
