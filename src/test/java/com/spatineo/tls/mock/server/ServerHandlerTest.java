@@ -2,6 +2,7 @@ package com.spatineo.tls.mock.server;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
@@ -19,27 +20,28 @@ public class ServerHandlerTest {
         serverHandler = PowerMockito.spy(new ServerHandler());
     }
 
-    //@Test
+    @Ignore
+    @Test
     public void startMain() throws Exception {
-        TestUtil.setSystemProperties(true);
+        TestUtil.setSystemProperties(true, 1000);
         ServerHandler.main(ARGS);
     }
 
     @Test
     public void initTest() throws Exception {
-        TestUtil.setSystemProperties(true);
+        TestUtil.setSystemProperties(true, 0);
         PowerMockito.doNothing().when(serverHandler, "startAndJoinServer");
 
-        serverHandler.init(TestUtil.DEFAULT_PROTOCOLS, TestUtil.DEFAULT_CIPHERS, TestUtil.DEFAULT_PORTS);
+        serverHandler.init(TestUtil.DEFAULT_PROTOCOLS, TestUtil.DEFAULT_CIPHERS, TestUtil.DEFAULT_PORTS, null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void noSystemProperties() throws Exception{
-        TestUtil.setSystemProperties(false);
+        TestUtil.setSystemProperties(false, 0);
         System.setProperty(Const.PROPERTY_KEYSTORE, "");
         System.setProperty(Const.PROPERTY_KEYSTORE_PSWD, "");
 
-        serverHandler.init(null, null, null);
+        serverHandler.init(null, null, null, null, null);
     }
 
     @Test

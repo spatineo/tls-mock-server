@@ -54,6 +54,12 @@
             <artifactId>http2-server</artifactId>
             <version>9.4.25.v20191220</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5</version>
+            <scope>test</scope>
+        </dependency>
         <!-- JUNIT -->
         <dependency>
             <groupId>junit</groupId>
@@ -175,6 +181,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>

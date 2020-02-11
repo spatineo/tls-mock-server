@@ -6,22 +6,15 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 public class CustomRequestHandler extends AbstractHandler {
-    private String contentType;
-    private String DEFAULT_RESPONSE;
     private String CUSTOM_RESPONSE;
     private File CUSTOM_RESPONSE_FILE;
 
-    public CustomRequestHandler(String contentType) {
-        this.contentType = contentType;
-    }
+    public CustomRequestHandler(){}
 
     public CustomRequestHandler(int port, String contextPath, String customResponse, String customResponseFilePath) {
-        DEFAULT_RESPONSE = Const.SERVER_GREETING + " " + port + " " + contextPath;
         CUSTOM_RESPONSE = customResponse;
 
         if(customResponseFilePath != null) {
@@ -34,23 +27,40 @@ public class CustomRequestHandler extends AbstractHandler {
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         String mimeType;
+        PrintWriter out = response.getWriter();
         if(CUSTOM_RESPONSE_FILE == null) {
-            mimeType = request.getHeader("Accept");
-            mimeType = (mimeType != null) ? mimeType : "text/plain";
+            mimeType = request.getHeader(Const.HEADER_ACCEPT);
+            mimeType = (!ServerHandler.isEmpty(mimeType)) ? mimeType.split(Const.SEPARATOR)[0] : Const.CONTENT_TYPE_PLAIN;
 
-            PrintWriter out = response.getWriter();
-            out.println((CUSTOM_RESPONSE != null && CUSTOM_RESPONSE.trim() != "") ? CUSTOM_RESPONSE : DEFAULT_RESPONSE);
+            out.println(!ServerHandler.isEmpty(CUSTOM_RESPONSE) ? CUSTOM_RESPONSE : Const.DEFAULT_RESPONSE);
         } else {
             mimeType = Const.CONTENT_TYPE_PLAIN;
-            response.setHeader("Content-Disposition", "attachment; filename=" + CUSTOM_RESPONSE_FILE.getName());
+            response.setHeader(Const.HEADER_CONTENT_TYPE, "attachment; filename=" + CUSTOM_RESPONSE_FILE.getName());
+
+            BufferedReader br = new BufferedReader(new FileReader(CUSTOM_RESPONSE_FILE));
+            String line;
+            while((line = br.readLine()) != null) {
+                out.println(line);
+            }
         }
 
         response.setContentType(mimeType);
         response.setStatus(HttpServletResponse.SC_OK);
 
+        baseRequest.setHandled(true);
+
+        String delay = System.getProperty(Const.PROPERTY_RESPONSE_DELAY);
+        try {
+            if(!ServerHandler.isEmpty(delay)) {
+                Thread.sleep(Integer.parseInt(delay));
+            }
+        } catch (InterruptedException e) {
+            System.out.println("Connection has timed out");
+        } catch(NumberFormatException e) {
+            e.printStackTrace();
+        }
         System.out.println("Response: ");
         System.out.println(response.toString());
-        //TODO: add response delay
-        baseRequest.setHandled(true);
+
     }
 }

@@ -1,19 +1,15 @@
 package com.spatineo.tls.mock.server;
 
-import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.http2.HTTP2Cipher;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.util.resource.PathResource;
-import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-
-import java.io.File;
 
 public class TLSMockServer {
     private Server SERVER;
+    private int HTTP_PORT;
+    private int HTTPS_PORT;
 
     /**
      * <p>Class constructer for custom implementation of jetty server</p>
@@ -22,6 +18,7 @@ public class TLSMockServer {
     public TLSMockServer(int port) {
         System.out.println("Setting http port to " + port);
         SERVER = new Server(port);
+        this.HTTP_PORT = port;
         System.out.println("Server initialized");
     }
 
@@ -77,10 +74,11 @@ public class TLSMockServer {
      * @param securePort The port at which https requests are made to
      * @param ciphers An array of cipher suites accepted by the server
      * @param protocols An array of TLS protocol versions accepted by the server
-     * @param customResponse
-     * @param responseFilePath
+     * @param customResponse An optional custom response string that will be returned from the /get endpoint
+     * @param responseFilePath An optional file path that will be returned from the /get endpoint
      */
     public void initTestServer(int securePort, String[] ciphers, String[] protocols, String customResponse, String responseFilePath) {
+        this.HTTPS_PORT = securePort;
         System.out.println("Setting https port to " + securePort);
         HttpConfiguration httpsConfig = createHttpsFactory(securePort);
         HttpConnectionFactory httpsCF = new HttpConnectionFactory(httpsConfig);
@@ -94,38 +92,14 @@ public class TLSMockServer {
 
         HandlerList handlers = new HandlerList();
 
-/* TODO: Remove commented code once tests are done
-
-        ContextHandler rootpath = new ContextHandler();
-        rootpath.setContextPath("/");
-        rootpath.setHandler(new CustomRequestHandler(Const.CONTENT_TYPE_HTML));
-
-        ContextHandler jsonpath = new ContextHandler();
-        jsonpath.setContextPath("/json"); //TODO: MIME type as parameter
-        jsonpath.setHandler(new CustomRequestHandler(Const.CONTENT_TYPE_JSON));
-
-        ContextHandler xmlpath = new ContextHandler();
-        xmlpath.setContextPath("/xml"); //TODO: MIME type as parameter
-        xmlpath.setHandler(new CustomRequestHandler(Const.CONTENT_TYPE_XML));
-**/
         ContextHandler getpath = new ContextHandler();
-        String contextPath = "/get";
+        String contextPath = Const.CONTEXT_PATH_GET;
         getpath.setContextPath(contextPath);
         getpath.setHandler(new CustomRequestHandler(securePort, contextPath, customResponse, responseFilePath));//TODO: add custom response
 
-/*
-        String filePath = System.getProperty(Const.PROPERTY_RESPONSE_FILE);
-        ContextHandler filepath = new ContextHandler();
-        filepath.setContextPath("/file");
-        filepath.setHandler(new CustomFileRequestHandler((ServerHandler.isEmpty(filePath)) ? "" : filePath));
-        handlers.addHandler(filepath);
-        handlers.addHandler(jsonpath);
-        handlers.addHandler(xmlpath);
-        handlers.addHandler(rootpath);*/
         handlers.addHandler(getpath);
 
         SERVER.setHandler(handlers);
-
     }
 
     private HttpConfiguration createHttpsFactory(int port) {
@@ -149,5 +123,13 @@ public class TLSMockServer {
         sslContext.setNeedClientAuth(false);
 
         return new SslConnectionFactory(sslContext, Const.PROTOCOL);
+    }
+
+    public int getHttpPort() {
+        return HTTP_PORT;
+    }
+
+    public int getHttpsPort() {
+        return HTTPS_PORT;
     }
 }

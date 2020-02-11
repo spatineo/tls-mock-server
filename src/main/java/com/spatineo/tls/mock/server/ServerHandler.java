@@ -34,7 +34,13 @@ public class ServerHandler {
             System.out.println("Unsecured and secured port: " + args[2]);
             Integer[] ports = stringToIntArray(args[2]);
 
-            serverHandler.init(protocolList, cipherList, ports);
+            String customResponseString = System.getProperty(Const.PROPERTY_RESPONSE_STRING);
+            System.out.println("Custom response string (tls.mock.server.custom.response.string): " + customResponseString);
+
+            String customResponseFilePath = System.getProperty(Const.PROPERTY_RESPONSE_FILE_PATH);
+            System.out.println("Custom response file path (tls.mock.server.custom.response.file.path): " + customResponseFilePath);
+
+            serverHandler.init(protocolList, cipherList, ports,customResponseString, customResponseFilePath);
         } catch(IllegalArgumentException e) {
             e.printStackTrace();
         }
@@ -58,7 +64,7 @@ public class ServerHandler {
      * @param ports integer array containing two ports [1] http port and [2] https port
      * @throws IllegalArgumentException If incorrect arguments are passed to this method  an IllegalArgumentException is thrown. Argument descriptors can be found in the main method javadoc.
      */
-    public void init(String[] protocols, String[] ciphers, Integer[] ports) throws IllegalArgumentException {//TODO: Add custom responses
+    public void init(String[] protocols, String[] ciphers, Integer[] ports, String customResponseString, String customResponseFilePath) throws IllegalArgumentException {//TODO: Add custom responses
         if(isEmpty(System.getProperty(Const.PROPERTY_KEYSTORE)) || isEmpty(System.getProperty(Const.PROPERTY_KEYSTORE_PSWD))) {
             throw new IllegalArgumentException(Const.BAD_ARGUMENTS_MESSAGE);
         }
@@ -66,7 +72,7 @@ public class ServerHandler {
             throw new IllegalArgumentException(Const.BAD_ARGUMENTS_MESSAGE);
         }
         SERVER = new TLSMockServer(ports[0]);
-        SERVER.initTestServer(ports[1], ciphers, protocols);
+        SERVER.initTestServer(ports[1], ciphers, protocols, customResponseString, customResponseFilePath);
         startAndJoinServer();
     }
 
