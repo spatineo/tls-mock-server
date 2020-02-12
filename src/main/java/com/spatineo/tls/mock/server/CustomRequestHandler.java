@@ -14,7 +14,7 @@ public class CustomRequestHandler extends AbstractHandler {
 
     public CustomRequestHandler(){}
 
-    public CustomRequestHandler(int port, String contextPath, String customResponse, String customResponseFilePath) {
+    public CustomRequestHandler(String customResponse, String customResponseFilePath) {
         CUSTOM_RESPONSE = customResponse;
 
         if(customResponseFilePath != null) {
@@ -26,6 +26,17 @@ public class CustomRequestHandler extends AbstractHandler {
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
+        String delay = System.getProperty(Const.PROPERTY_RESPONSE_DELAY);
+        try {
+            if(!ServerHandler.isEmpty(delay)) {
+                Thread.sleep(Integer.parseInt(delay));
+            }
+        } catch (InterruptedException e) {
+            throw new ServletException(e.getCause());
+        } catch(NumberFormatException e) {
+            e.printStackTrace();
+        }
+
         String mimeType;
         PrintWriter out = response.getWriter();
         if(CUSTOM_RESPONSE_FILE == null) {
@@ -48,17 +59,6 @@ public class CustomRequestHandler extends AbstractHandler {
         response.setStatus(HttpServletResponse.SC_OK);
 
         baseRequest.setHandled(true);
-
-        String delay = System.getProperty(Const.PROPERTY_RESPONSE_DELAY);
-        try {
-            if(!ServerHandler.isEmpty(delay)) {
-                Thread.sleep(Integer.parseInt(delay));
-            }
-        } catch (InterruptedException e) {
-            System.out.println("Connection has timed out");
-        } catch(NumberFormatException e) {
-            e.printStackTrace();
-        }
         System.out.println("Response: ");
         System.out.println(response.toString());
 
