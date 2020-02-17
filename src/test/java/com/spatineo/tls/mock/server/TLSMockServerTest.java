@@ -4,7 +4,11 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.junit.*;
 
+import javax.imageio.ImageIO;
 import javax.net.ssl.SSLHandshakeException;
+import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
@@ -127,6 +131,31 @@ public class TLSMockServerTest {
             }
             Assert.assertTrue(sb.toString().contains("<message>Hello World!</message>"));
         } finally {
+            server.stop();
+        }
+    }
+
+    @Test
+    public void imageResponseTest() throws IOException {
+        ByteArrayOutputStream tmp = new ByteArrayOutputStream();
+        TestUtil.setSystemProperties(true, 0);
+        String filePath = getClass().getClassLoader().getResource("test.png").getPath();
+
+        TLSMockServer server =  initAndStartServerWithDefaults(null, filePath);
+        try {
+            CloseableHttpResponse response = tryHttpURL(HTTP_LOCALHOST + server.getHttpPort() + ENDPOINT, null);
+            Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+            Assert.assertTrue(headerExists(response.getAllHeaders(), HEADER_CONTENT_DISPOSITION, "attachment"));
+            Assert.assertTrue(headerExists(response.getAllHeaders(), HEADER_CONTENT_TYPE, "image"));
+
+            BufferedImage bi = ImageIO.read(response.getEntity().getContent());
+            Assert.assertEquals(300, bi.getHeight());
+            Assert.assertEquals(300, bi.getWidth());
+
+            ImageIO.write(bi, "png", tmp);
+            Assert.assertEquals(4591, tmp.size());
+        } finally {
+            tmp.close();
             server.stop();
         }
     }
