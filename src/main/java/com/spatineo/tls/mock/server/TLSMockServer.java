@@ -93,8 +93,8 @@ public class TLSMockServer {
         HandlerList handlers = new HandlerList();
 
         ContextHandler getpath = new ContextHandler();
-        String contextPath = Const.CONTEXT_PATH_GET;
-        getpath.setContextPath(contextPath);
+        getpath.setContextPath(Const.CONTEXT_PATH_GET);
+
         getpath.setHandler(new CustomRequestHandler(customResponse, responseFilePath));
 
         handlers.addHandler(getpath);
